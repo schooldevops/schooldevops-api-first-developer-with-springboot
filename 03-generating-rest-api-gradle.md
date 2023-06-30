@@ -289,7 +289,7 @@ gradle clean openApiGenerate build
 
 - 위 명령을 실행하면 다음과 같이 build 디렉토리가 생성된다. 
 
-![api-first-gen-01](./03-generating-rest-api-gradle.md)
+![api-first-gen-01](./imgs/api-first-gen-gradle-01.png)
 
 
 <br/>
