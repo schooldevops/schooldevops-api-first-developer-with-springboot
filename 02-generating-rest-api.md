@@ -1,8 +1,8 @@
 # Generating API with OpenAPI-Generator
 
-- 이전 아티클에서는 openapi 를 이용하여 자동으로 api-doc을 자동생성하고, Swagger-UI로 생성된 내역을 확ㅇ니해 보았다. 
+- 이전 아티클에서는 openapi 를 이용하여 자동으로 api-doc을 자동생성하고, Swagger-UI로 생성된 내역을 확인해 보았다. 
 - 이번에는 api를 우선 선언하고, 이를 이용하여 자동으로 REST API를 생성하고, 전달되는 Domain 객체를 자동으로 생성하는 방법을 알아볼 것이다. 
-- 이번 아티클을 위해서는 [이전 샘플코드](https://github.com/schooldevops/api-first-developer-with-springboot/tree/01-api-first-basic)를 우선 체크아웃 받아야 한다.
+- 이번 아티클을 위해서는 [이전 샘플코드](https://github.com/schooldevops/schooldevops-api-first-developer-with-springboot/tree/main/api-first-skeleton-maven)를 우선 체크아웃 받아야 한다.
 
 ## 의존성 추가하기
 

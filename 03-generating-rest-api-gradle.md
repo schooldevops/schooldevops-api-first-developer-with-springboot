@@ -1,130 +1,183 @@
-# Generating API with OpenAPI-Generator
+# Generating API with OpenAPI-Generator and Gradle
 
-- 이전 아티클에서는 openapi 를 이용하여 자동으로 api-doc을 자동생성하고, Swagger-UI로 생성된 내역을 확ㅇ니해 보았다. 
-- 이번에는 api를 우선 선언하고, 이를 이용하여 자동으로 REST API를 생성하고, 전달되는 Domain 객체를 자동으로 생성하는 방법을 알아볼 것이다. 
-- 이번 아티클을 위해서는 [이전 샘플코드](https://github.com/schooldevops/api-first-developer-with-springboot/tree/01-api-first-basic)를 우선 체크아웃 받아야 한다.
+- 이번 아티클에서는 petstore.yaml 을 이용하여 openapi generator 를 통해 서버사이드 코드를 생성해 보겠다. 
+- 이전 아티클에서는 maven 플러그인을 이용했지만 이번에는 gradle 플러그인을 이용하여 생성해 볼 것이다. 
+
+## 프로젝트 생성하기 
+
+- 우선 [start.spring.io](https://start.spring.io/) 에서 다음 설정으로 프로젝트를 생성하자. 
+  - Project: Gradle-Groovy
+  - Language: Java
+  - SpringBoot: 2.7.13
+  - Porject Metadata: 
+    - Group: com.schooldevops.apifirst
+    - Artifact: apifirstsamples
+  - 의존성:
+    - spring web
+    - lombok
 
 ## 의존성 추가하기
 
+- build.gradle 파일을 열고 다음과 같이 추가하자. 
 
-- 사용할 의존성 객체
-    - openapi-generator: openapi를 이용하여 기존 엔드포인트를 생성할 수 있는 라이브러리이다.
-    - jackson-databind-nullable: REST API로 json 형식으로 전달될때 객체 변환을 위해 사용되는 라이브러리
-    - validation-api: openapi에서 생성되는 코드가 참조할 검증을 위한 라이브러리
-    - javax.annotation-api: openapi에서 생성되는 코드가 참조할 어노테이션 라이브러리
-    - openapi-generator-maven-plugin: openapi 를 자동으로 생성할 플러그인 라이브러리
-    - hibernate-validator: 검증용 의존성 객체 
+### 플러그인 설치 
+
+```go
+plugins {
+	id 'java'
+//	boot version 2.7.x버젼
+	id 'org.springframework.boot' version '2.7.13'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+
+//	boot version 3.0.6 이후
+//	id 'org.springframework.boot' version '3.0.6'
+//	id 'io.spring.dependency-management' version '1.1.0'
+	id "org.openapi.generator" version "6.5.0"
+	id "com.diffplug.eclipse.apt" version "3.26.0"
+}
+```
+
+- org.openapi.generator 버젼을 6.5.0으로 설정한다. openpai generator의 플러그인이다. 
+- com.diffplug.eclipse.apt 버젼을 3.26.0 으로 설정한다. 이는 eclipse에서 필요한경우 사용할 수 있다. 
+
+- 위 코드는 스프링부트 2.7.x 버젼과 3.0.6 버젼용으로 되어 있으니 버젼에 따라 지정하면 된다. 
+
+
+### 의존성 설정하기 
+
+- 이제 필요한 의존성을 설정하자. 아래와 같이 구역을 구분하여 설정하였다. 
+
+```groovy
+dependencies {
+//	1. 기본 의존성 정보
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+//	2. springdoc-openapi 적용 정보 (Swagger 적용을 위한 정보)
+	//	boot version 2.7.5 버젼
+	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
+	implementation 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.11'
+	//	boot version 3.0.6 버젼
+//	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+//	3. openapi generator 적용을 위한 정보
+	//	boot version 2.7.5 버젼
+	implementation 'org.openapitools:openapi-generator:5.1.1'
+	implementation "org.openapitools:openapi-generator-gradle-plugin:5.1.1"
+	//	boot version 3.0.6 버젼
+//	implementation 'org.openapitools:openapi-generator:6.5.0'
+//	implementation "org.openapitools:openapi-generator-gradle-plugin:6.5.0"
+
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+	implementation 'javax.validation:validation-api:2.0.1.Final'
+	implementation 'javax.annotation:javax.annotation-api:1.3.2'
+	implementation 'javax.servlet:javax.servlet-api:4.0.1'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
+
+}
+```
+
+- 1. 기본설정
+  - 이 영역에는 스프링부트를 위한 기본 설정이 지정되었다. 
+- 2. springdoc-openapi 적용 정보 설정
+  - Swagger 적용을 위한 위치이다. 부트 2.7.X 버젼에서는 이 설정이 필요하다. 
+  - springfox-boot-starter: 스프링부트용 swagger 기본 패키지
+  - springfox-swagger-ui: swagger ui를 노출하기 위한 버젼 
+  - io.swagger.core.v3:swagger-annotations-jakarta: swagger 어노테이션을 위한 설정
+  - 참고: 3.0.x 의 스프링부트의 경우 주석을 교체해주자. 
+    - springdoc-openapi-starter-webmvc-ui: 2.1.0 만으로 이전 버젼의 다양한 설정을 대체할 수 있다. 
+- 3. openapi generator 설정정보
+  - openapi-generator:5.1.1 openapi generator 를 위해 필요한 패키지
+  - openapi-generator-gradle-plugin:5.1.1 이는 openapi generator를 위한 gradle 플러그인이다 .
+  - 참고: 3.0.x 의 스프링부트의 경우 주석을 교체해주자. 
+<br/>
+  - jackson-databind-nullable:0.2.6 REST API용으로 application/json을 변환하기 위한 패키지
+  - validation-api:2.0.1.Final 스키마(데이터객체) 검증을위한 패키지 
+  - javax.annotation-api:1.3.2 openapi에서 사용하는 어노테이션 처리용 패키지
+  - javax.servlet-api:4.0.1 웹 엔드포인트를 생성하기 위한 서블릿 패키지
+  - spring-boot-starter-validation 스프링부트 데이터 검증을위한 패키지
+  - httpclient5:5.2.1 http 요청을 위한 클라이언트 패키지
 
 <br/>
 
-- pom.xml 을 열어 다음과 같이 코드를 추가하자.  
+- 위와 같이 의존성 파일을 설정해 주어야 정상적으로 openapi generator로 스켈레톤 코드를 생성해 낼 수 있다. 
 
-```xml
+### openApiGenerate 코드 생성 Task 작성하기
 
-		<!-- springdoc-openapi 이전 샘플에서 추가된 라이브러리 -->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.1.0</version>
-		</dependency>
-		<!-- springdoc-openapi -->
+- 이제 openApiGenerate를 위한 gradle 태스크를 생성하자. 
+- openapi plugin은 openApiGenerate를 참조하게 된다. 
 
-		<!-- openapi -->
-		<dependency>
-			<groupId>org.openapitools</groupId>
-			<artifactId>openapi-generator</artifactId>
-            <version>6.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openapitools</groupId>
-			<artifactId>jackson-databind-nullable</artifactId>
-			<version>0.2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>2.0.1.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
-			<version>1.3.2</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>4.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openapitools</groupId>
-			<artifactId>openapi-generator-maven-plugin</artifactId>
-			<version>6.5.0</version>
-		</dependency>
-        <dependency>
-          <groupId>org.hibernate.validator</groupId>
-          <artifactId>hibernate-validator</artifactId>
-          <version>8.0.0.Final</version>
-        </dependency>
-
+```groovy
+openApiGenerate {
+	verbose.set(true)
+	generatorName.set("spring")
+	library.set("spring-boot")
+	inputSpec.set(project.file("$rootDir/src/main/resources/petstore.yaml").absolutePath)
+//	outputDir.set(project.file("$rootDir/src/main/").absolutePath)
+    outputDir.set(project.file("$buildDir/generated-sources").absolutePath)
+	apiPackage.set("com.schooldevops.apifirst.openapi.rest")
+	modelPackage.set("com.schooldevops.apifirst.openapi.domain")
+	configOptions.set(
+			[
+					interfaceOnly: "true",
+					useBeanValidation: "true",
+					performBeanValidation: "true",
+					serializableModel: "true",
+					sourceFolder: "/java",
+					implFolder: "/java",
+			]
+	)
+}
 ```
 
-## Maven Plugin 등록하기. 
-
-- 이제 Maven Plugin 을 등록해보자. 
-- 플러그인은 openapi를 이용하여 skeleton/stub를 자동으로 생성하는 역할을 수행한다. 
+- verbose.set(true)
+  - true로 설정한 경우 생성되는 로그를 확인할 수 있다. 
+- generatorName.set("spring")
+  - 스프링 전용 코드를 생성하라는 의미이다. 이는 generator 가 어떠한 코드가 생성할지를 지정하는 값이다. 
+- library.set("spring-boot")
+  - 스프링 generator내부에 spring-boot 라이브러리를 이용하여 생성하라고 지정한다. 
+- inputSpec
+  - 생성할 openapi manifest 파일의 경로를 지정한다. 
+  - 이는 웹으로도 지정할 수 있고, 로컬 파일로 지정할 수도 있다. 
+- outputDir
+  - 생성되는 파일이 위치하는 경로를 지정한다. 우리 파일은 프로젝트 디렉토리 내에 /generated-source 디렉토리에 생성한다는 의미이다. 
+- apiPackage
+  - 생성되는 REST API의 패키지 경로를 지정한다. 
+- modelPackage
+  - 생성되는 모델 REST API로 들어오는 데이터 객체 , 출력 객체가 생성될 위치를 지정한다. 
+- configOptions
+  - 설정 옵션을 지정하며, 생성되는 코드를 미세조정한다. 
 
 <br/>
 
-- pom.xml 파일에 다음과 같이 추가하자.
+- 결국 위 코드는 소스 디렉토리의 petstore.yaml 파일을 읽어, openapi generator 를 통해서 서버 Skeleton 파일을 자동으로 생성하는 역할을 한다. 
 
-```xml
-        <plugins>
-			<plugin>
-				<groupId>org.openapitools</groupId>
-				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>6.5.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<inputSpec>
-								${project.basedir}/src/main/resources/petstore.yaml
-							</inputSpec>
-							<generatorName>spring</generatorName>
-							<library>spring-boot</library>
-							<apiPackage>com.schooldevops.apifirst.apifirstsamples.controller</apiPackage>
-							<modelPackage>com.schooldevops.apifirst.apifirstsamples.domain</modelPackage>
-							<supportingFilesToGenerate>
-								ApiUtil.java
-							</supportingFilesToGenerate>
-							<configOptions>
-								<interfaceOnly>true</interfaceOnly>
-								<useBeanValidation>true</useBeanValidation>
-								<performBeanValidation>true</performBeanValidation>
-								<sourceFolder>/src/main/java</sourceFolder>
-								<implFolder>/src/main/java</implFolder>
-								<serializableModel>true</serializableModel>
-							</configOptions>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
+### 프로젝트 빌드 설정
+
+- 이제 소스가 자동으로 생성되었으므로, 생성된 소스를 컴파일 하도록 설정해야한다. 
+
+```groovy
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'build/generated-sources/java']
+        }
+    }
+}
 ```
 
-- 위 내용을 분석해보자. 
-  - groupId, artifactId 는 어떠한 openapi-generator 플러그인을 사용할지 지정한다. 
-  - inputSpec: 생성할 openapi manifest 파일 위치를 지정한다. 우리는 resources/petstore.yaml 을 이용할 것이다. 
-  - generatorName: 어떠한 언어로 생성할지 지정한다. 여기서는 spring용으로 코드를 생성한다. [다양한 언어](https://openapi-generator.tech/docs/generators/)로 생성기가 있으므로 문서를 찾아보자. 
-  - library: 사용할 라이브러리 우리는 스프링부트 어플리케이션을 생성할 것이기 때문에 [spring-boot](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/spring.md)로 지정했다.
-  - api-package: 생성할 api가 어디에 위치할지 지정한다. 
-  - domain-package: 생성할 domain이 어디에 위치할지 지정한다.
-  - supportingFilesToGenerate: 생성된 파일을 지원하기 위한 공통 객체
-  - configOptions: 생성된 코드에 대한 [옵션 정보](https://openapi-generator.tech/docs/configuration/) 를 참조하자.
-
+- sourceSets
+  - 우리가 컴파일해야할 대상 소스가 어디에 위치되어있는지 알려주는 역할을 한다. 
+- srcDirs:
+  - 대상 소스 디렉토리 목록을 지정한다. 
+  - src/main/java
+    - 원래 스프링부트 소스가 위치하는 디렉토리이다. 이 설정은 기본적으로 build.gradle에 있던 내용이다. 
+  - build/generated-sources/java
+    - openapi generator가 생성한 소스파일의 위치이다. 
 ## 샘플 코드 다운받기 
 
 - 이제 샘플 코드를 다운받을 차례이다. 
@@ -224,15 +277,19 @@ paths:
 
 ## 코드 생성하기 
 
-- maven을 이용하여 코드를 생성할 것이다. 
+- gradle을 이용하여 코드를 생성할 것이다. 
 
 ```shell
-mvn clean install
+gradle clean openApiGenerate build
 ```
 
-- 위 명령을 실행하면 다음과 같이 target 디렉토리가 생성된다. 
+- 위 명령은 clean으로 기존 생성된 코드를 제거한다. 
+- 그리고 openApiGenerate를 이용하여 좀전에 설정한 태스크를 실행한다. 
+- build 는 소스파일을 빌드하도록 한다. 
 
-![api-first-gen-01](./imgs/api-first-gen-01.png)
+- 위 명령을 실행하면 다음과 같이 build 디렉토리가 생성된다. 
+
+![api-first-gen-01](./03-generating-rest-api-gradle.md)
 
 
 <br/>
@@ -362,9 +419,7 @@ from: https://editor.swagger.io/
 
 ## WrapUp
 
-- 지금까지 openapi-generator 설정에 대해서 알아 보았다. 
+- 지금까지 openapi-generator 와 gradle 설정에 대해서 알아 보았다. 
 - petstore.yaml 파일은 openapi-generator를 통해 생성할 manifest 파일이며, 이 파일의 정의에 따라 자동으로 REST API가 생성이 된다. 
 - 이렇게 생성한 코드는 인터페이스이며, 인터페이스를 구현하면 마지막에 본 내용과 같이 swagger-ui에서 생성된 REST API 목록을 확인할 수 있다. 
 - 이로써 자동을 생성된 코드를 사용할 수 있을 뿐만 아니라, 다양한 코드로도 생성할 수 있어, 마이크로 서비스 인터페이스를 작성할때 표준화된 코드로, 쉽게 코드를 생성할 수 있다. 
-
-
