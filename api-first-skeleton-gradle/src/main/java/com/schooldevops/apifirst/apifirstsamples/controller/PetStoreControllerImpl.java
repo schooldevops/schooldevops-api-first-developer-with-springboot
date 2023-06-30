@@ -14,11 +14,16 @@ import java.util.List;
 public class PetStoreControllerImpl implements PetApi {
 
     @Override
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = "/pet/{petId}",
-            produces = { "application/json" }
-    )
+    public ResponseEntity<Pet> addPet(Pet pet) {
+        return PetApi.super.addPet(pet);
+    }
+
+    @Override
+//    @RequestMapping(
+//            method = RequestMethod.GET,
+//            value = "/pet/{petId}",
+//            produces = { "application/json" }
+//    )
     public ResponseEntity<Pet> getPetById(Long petId) {
         Pet pet = new Pet();
         pet.setId(petId);

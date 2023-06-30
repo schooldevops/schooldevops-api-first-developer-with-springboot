@@ -85,26 +85,68 @@ dependencies {
 //	4. 기타 설정..
 }
 
-openApiGenerate {
-	verbose.set(true)
-	generatorName.set("spring")
-	library.set("spring-boot")
-	inputSpec.set(project.file("$rootDir/src/main/resources/petstore.yaml").absolutePath)
-//	outputDir.set(project.file("$rootDir/src/main/").absolutePath)
-    outputDir.set(project.file("$buildDir/generated-sources").absolutePath)
-	apiPackage.set("com.schooldevops.apifirst.openapi.rest")
-	modelPackage.set("com.schooldevops.apifirst.openapi.domain")
-	configOptions.set(
-			[
-					interfaceOnly: "true",
-					useBeanValidation: "true",
-					performBeanValidation: "true",
-					serializableModel: "true",
-					sourceFolder: "/java",
-					implFolder: "/java",
-			]
-	)
+//openApiGenerate {
+//	verbose.set(true)
+//	generatorName.set("spring")
+//	library.set("spring-boot")
+//	inputSpec.set(project.file("$rootDir/src/main/resources/petstore.yaml").absolutePath)
+////	outputDir.set(project.file("$rootDir/src/main/").absolutePath)
+//    outputDir.set(project.file("$buildDir/generated-sources").absolutePath)
+//	apiPackage.set("com.schooldevops.apifirst.openapi.rest")
+//	modelPackage.set("com.schooldevops.apifirst.openapi.domain")
+//	configOptions.set(
+//			[
+//					interfaceOnly: "true",
+//					useBeanValidation: "true",
+//					performBeanValidation: "true",
+//					serializableModel: "true",
+//					sourceFolder: "/java",
+//					implFolder: "/java",
+//			]
+//	)
+//}
+
+
+
+def swaggerMap = [
+		"petstore": "petstore.yaml",
+		"bopo-user": "bopo-user.yaml"
+]
+
+swaggerMap.each{entry ->
+//	println "$rootDir/src/main/resources/api/${entry.value}"
+	tasks.create("openApiGenerate-" + entry.key, org.openapitools.generator.gradle.plugin.tasks.GenerateTask, {
+//		verbose.set(true)
+		generatorName.set("spring")
+		library.set("spring-boot")
+//		print project.file("$rootDir/src/main/resources/api/${entry.value}").absolutePath
+		inputSpec.set("$rootDir/src/main/resources/api/${entry.value}")
+
+//		inputSpec.set(project.file("$rootDir/src/main/resources/${specFile}").absolutePath)
+		outputDir.set(project.file("$buildDir/generated-sources").absolutePath)
+		apiPackage.set("com.schooldevops.apifirst.openapi.rest")
+		modelPackage.set("com.schooldevops.apifirst.openapi.domain")
+		configOptions.set(
+				[
+						interfaceOnly: "true",
+						useBeanValidation: "true",
+						performBeanValidation: "true",
+						serializableModel: "true",
+						sourceFolder: "/java",
+						implFolder: "/java",
+				]
+		)
+	})
 }
+
+tasks.register("openApiGenerateAll") {
+	print swaggerMap.entrySet().stream().map(entry -> "openApiGenerate-${entry.key}").toArray()
+	dependsOn(swaggerMap.entrySet().stream().map(entry -> "openApiGenerate-${entry.key}").toArray())
+}
+
+//openApiGenerate{
+//	openApiGenerateAll({})
+//}
 
 tasks.named('test') {
 	useJUnitPlatform()

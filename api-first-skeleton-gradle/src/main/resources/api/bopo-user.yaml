@@ -1,0 +1,638 @@
+openapi: '3.0.2'
+info:
+  title: Back Office and Partner Office 사용자 관리
+  version: '1.0'
+servers:
+  - url: https://localhost:8080
+tags:
+  - name: BO
+    description: Back Office User
+  - name: PO
+    description: Partner Office User
+paths:
+  /po/user:
+    post:
+      tags:
+        - PO
+      summary: PO 일반 사용자 가입
+      description:  PO 일반 사용자 가입 처리
+      operationId: joinUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POUser'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POUser'
+    put:
+      tags:
+        - PO
+      summary: PO 일반 사용자 수정
+      description:  PO 일반 사용자 수정 처리
+      operationId: updateUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POUser'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POUser'
+  /po/user/{userId}:
+    get:
+      tags:
+        - PO
+      summary: PO 일반 사용자 가입
+      description:  PO 일반 사용자 가입 처리
+      operationId: getUser
+      parameters:
+        - in: path
+          required: true
+          name: userId
+          schema:
+            type: string
+            description: 사용자아이디
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POUser'
+        '405':
+          description: Invalid input
+  /po/businessUser:
+    post:
+      tags:
+        - PO
+      summary: PO 사업자 사용자 가입
+      description:  PO 사업자 사용자 가입 처리
+      operationId: joinPOBusinessUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POBusinessUser'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POBusinessUser'
+    put:
+      tags:
+        - PO
+      summary: PO 사업자 사용자 수정
+      description:  PO 사업자 사용자 수정 처리
+      operationId: updatePOBusinessUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POBusinessUser'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POBusinessUser'
+  /po/businessUser/{userId}:
+    get:
+      tags:
+        - PO
+      summary: PO 사업자 사용자 조회
+      description:  PO 사업자 사용자 조회 처리
+      operationId: getPOBusinessUser
+      parameters:
+        - in: path
+          required: true
+          name: userId
+          schema:
+            type: string
+            description: 사용자아이디
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POBusinessUser'
+        '405':
+          description: Invalid input
+  /po/joinInvitedUser:
+    post:
+      tags:
+        - PO
+      summary: 초대를 통한 사용자 가입
+      description:  초대를 통한 사용자 가입 처리
+      operationId: joinInvitedUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POBusinessUser'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POBusinessUser'
+  /po/checkDuplicatedByUserId/{userId}:
+    post:
+      tags:
+        - PO
+      summary: 아이디 중복 여부 체크
+      description: 아이디 중복 여부 체크
+      operationId: checkDuplicatedUserId
+      parameters:
+        - in: path
+          required: true
+          name: userId
+          schema:
+            type: string
+            description: 중복체크할 아이디
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+  /po/checkBusinessNo/{businessNo}:
+    post:
+      tags:
+        - PO
+      summary: 사업자코드 조회
+      description: 사업자코드 조회
+      operationId: checkBusinessNo
+      parameters:
+        - in: path
+          required: true
+          name: businessNo
+          schema:
+            type: string
+            description: 조회할 사업자 아이디
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+  /po/checkDuplicatedByEmail/{email}:
+    post:
+      tags:
+        - PO
+      summary: 이메일 중복여부 조회
+      description: 이메일 중복여부 조회
+      operationId: checkDuplicatedByEmail
+      parameters:
+        - in: path
+          required: true
+          name: email
+          schema:
+            type: string
+            description: 중복여부를 조회할 이메일
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+  /po/login:
+    post:
+      tags:
+        - PO
+      summary: PO회원 로그인
+      description: PO회원 로그인
+      operationId: login
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POLoginInfo'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POLoginInfo'
+  /po/changePassword:
+    post:
+      tags:
+        - PO
+      summary: 비밀번호 변경
+      description: 비밀번호를 변경한다.
+      operationId: changePassword
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/POChangePasswordInfo'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POChangePasswordInfo'
+  /po/requestChangePassword:
+    post:
+      tags:
+        - PO
+      summary: 비밀번호 변경 요청
+      description: 비밀번호를 변경 요청을한다.
+      operationId: requestChangePassword
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+  /po/requestChangePasswordByUserInfo:
+    post:
+      tags:
+        - PO
+      summary: 사용자 정보를 바탕으로 비밀번호 변경 요청
+      description: 사용자 정보를 바탕으로 비밀번호를 변경 요청을한다.
+      operationId: requestChangePasswordByUserInfo
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/RequestPhoneAuthInfo'
+  /po/requestPhoneAuthCode:
+    post:
+      tags:
+        - PO
+      summary: 휴대폰 인증 코드 요청
+      description: 휴대폰 인증 코드를 요청한다. (휴대폰 번호가 존재하면 해당 휴대폰 번호로 인증요청, 유저 토큰이 있으면 저장되어 있는 폰으로 전송 )
+      operationId: requestPhoneAuthCode
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/RequestPhoneAuthInfo'
+  /po/checkOPBrandByBranchCode/{brandCode}:
+    post:
+      tags:
+        - PO
+      summary: 담당 브랜드 선택
+      description: 제휴사 담당 브랜드 선택
+      operationId: checkOPBrand
+      parameters:
+        - in: path
+          required: true
+          name: brandCode
+          schema:
+            type: string
+            description: 운영할 브랜드 선택
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+  /po/findUserId:
+    post:
+      tags:
+        - PO
+      summary: 사용자 아이디 찾기
+      description: 사용자 아이디 찾기를 수행한다
+      operationId: findUserId
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/RequestPhoneAuthInfo'
+  /po/checkUserPassword:
+    post:
+      tags:
+        - PO
+      summary: 사용자 비밀번호 체크
+      description: 내정보 수정을 위한 사용자 비밀번호 체크
+      operationId: checkUserPassword
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationResult'
+        '405':
+          description: Invalid input
+      requestBody:
+        $ref: '#/components/requestBodies/POLoginInfo'
+
+
+components:
+  requestBodies:
+    RequestPhoneAuthInfo:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RequestPhoneAuthInfo'
+    POUser:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/POUser'
+    POBusinessUser:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/POBusinessUser'
+    POLoginInfo:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/POLoginInfo'
+    POChangePasswordInfo:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/POChangePasswordInfo'
+  schemas:
+    POChangePasswordInfo:
+      title: 회원비밀번호 변경 정보
+      description: 회원비림번호 변경 정보
+      type: object
+      properties:
+        id:
+          type: string
+          description: 회원아이디
+        oldPassword:
+          type: string
+          description: 과거 비밀번호 혹은 임시비밀번호
+        password:
+          type: string
+          description: 사용자 비밀번호 (8-20 이내 숫자, 특수문자, 영문자 중 2가지 이상 조합)
+        passwordConfirm:
+          type: string
+          description: 사용자 비밀번호 확인
+
+    RequestPhoneAuthInfo:
+      title: 휴대폰 인증 요청정보
+      description: 휴대폰 인증 요청정보
+      type: object
+      properties:
+        name:
+          type: string
+          description: 인증을 위한 사용자 이름
+        birth:
+          type: string
+          description: 인증을 위한 사용자 생년월일
+        phoneNo:
+          type: string
+          description: 휴대폰번호
+        authCode:
+          type: string
+          description: 휴대폰 인증번호
+    POLoginInfo:
+      title: PO회원 로그인 정보
+      description: 회원 로그인 정보
+      type: object
+      properties:
+        id:
+          type: string
+          description: 회원아이디
+        password:
+          type: string
+          description: 회원비밀번호
+    OperationResult:
+      title: 확인결과정보
+      description: 확인결과 정보를 일괄로 반환한다.
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int64
+          description: HTTP 상태 코드
+        resultCode:
+          type: string
+          description: 처리결과코드
+        content:
+          type: string
+          description: 처리 결과 내용 (JSON타입으로 다양한 내용이 전달된다.)
+    POUser:
+      title: PO일반 사용자
+      description: PO일반 사용자의 VO 객체
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 사용자 아이디 (6-20자 영문, 숫자, 특수문자(_-.)만 사용가능)
+        auditId:
+          type: string
+          description: 최종변경자 아이디
+        loginId:
+          type: string
+          description: 로그인아이디
+        userName:
+          type: string
+          description: 사용자 이름
+        empNum:
+          type: string
+          description: 사원번호
+        sexCd:
+          type: string
+          description: 성별코드
+        birthDate:
+          type: string
+          description: 생년월일
+        systemTypeCode:
+          type: string
+          description: 시스템 타입코드
+        userCreateTypeCode:
+          type: string
+          description: 사용자 생성 유형코드
+        taskTypeCode:
+          type: string
+          description: 작업유형코드
+        password:
+          type: string
+          description: 사용자 비밀번호 (8-20 이내 숫자, 특수문자, 영문자 중 2가지 이상 조합)
+        passwordConfirm:
+          type: string
+          description: 사용자 비밀번호 확인
+        postOrgId:
+          type: string
+          description: 소속조직아이디
+        brzId:
+          type: string
+          description: 거래처아이디
+        telcoCode:
+          type: string
+          description: 통신사 구분코드(SKT, KT, LG U+, 알뜰폰)
+          enum:
+            - SKT
+            - KT
+            - LGUPlus
+            - CheapPone
+        mobilePhoneNo:
+          type: string
+          description: 이동전화번호
+        emailAddress:
+          type: string
+          description: 메일주소 (사용자별로 오직 1개만 가능)
+        phoneAuthCode:
+          type: string
+          description: 휴대폰 인증 코드
+        secondAuthMethod:
+          type: string
+          description: 2차인증수단코드
+          enum:
+            - CellPhone
+            - Email
+        marketingRecvYn:
+          type: string
+          description: 마케팅수신여부
+        userStatusCode:
+          type: string
+          description: 사용자상태코드
+        userStatusChangerId:
+          type: string
+          description: 사용자상태수정자아이디
+        emailRecvYn:
+          type: string
+          description: 메일수신여부
+        mmsRecvYn:
+          type: string
+          description: MMS수신여부
+        webPushRecvYn:
+          type: string
+          description: 웹푸시수신여부
+        agreeTerm:
+          type: string
+          description: 약관동의 코드 (약관동의 코드는 JSON타입으로 서버사이드 전송)
+    POBusinessUser:
+      title: PO일반 사용자
+      description: PO일반 사용자의 VO 객체
+      type: object
+      properties:
+        userId:
+          type: string
+          description: 사용자 아이디 (6-20자 영문, 숫자, 특수문자(_-.)만 사용가능)
+        businessNo:
+          type: string
+          description: 사업자 등록번호 (-없이 등록)
+        auditId:
+          type: string
+          description: 최종변경자 아이디
+        loginId:
+          type: string
+          description: 로그인아이디
+        userName:
+          type: string
+          description: 사용자 이름
+        empNum:
+          type: string
+          description: 사원번호
+        sexCd:
+          type: string
+          description: 성별코드
+        birthDate:
+          type: string
+          description: 생년월일
+        systemTypeCode:
+          type: string
+          description: 시스템 타입코드
+        userCreateTypeCode:
+          type: string
+          description: 사용자 생성 유형코드
+        taskTypeCode:
+          type: string
+          description: 작업유형코드
+        password:
+          type: string
+          description: 사용자 비밀번호 (8-20 이내 숫자, 특수문자, 영문자 중 2가지 이상 조합)
+        passwordConfirm:
+          type: string
+          description: 사용자 비밀번호 확인
+        postOrgId:
+          type: string
+          description: 소속조직아이디
+        brzId:
+          type: string
+          description: 거래처아이디
+        telcoCode:
+          type: string
+          description: 통신사 구분코드(SKT, KT, LG U+, 알뜰폰)
+          enum:
+            - SKT
+            - KT
+            - LGUPlus
+            - CheapPone
+        mobilePhoneNo:
+          type: string
+          description: 이동전화번호
+        emailAddress:
+          type: string
+          description: 메일주소 (사용자별로 오직 1개만 가능)
+        phoneAuthCode:
+          type: string
+          description: 휴대폰 인증 코드
+        secondAuthMethod:
+          type: string
+          description: 2차인증수단코드
+          enum:
+            - CellPhone
+            - Email
+        marketingRecvYn:
+          type: string
+          description: 마케팅수신여부
+        userStatusCode:
+          type: string
+          description: 사용자상태코드
+        userStatusChangerId:
+          type: string
+          description: 사용자상태수정자아이디
+        emailRecvYn:
+          type: string
+          description: 메일수신여부
+        mmsRecvYn:
+          type: string
+          description: MMS수신여부
+        webPushRecvYn:
+          type: string
+          description: 웹푸시수신여부
+        agreeTerm:
+          type: string
+          description: 약관동의 코드 (약관동의 코드는 JSON타입으로 서버사이드 전송)
