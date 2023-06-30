@@ -1,0 +1,3 @@
+### GET pet by id
+GET localhost:9099/pet/1111
+Content-Type: application/json
