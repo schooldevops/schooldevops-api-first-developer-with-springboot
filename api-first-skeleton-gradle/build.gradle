@@ -110,7 +110,7 @@ dependencies {
 
 def swaggerMap = [
 		"petstore": "petstore.yaml",
-		"bopo-user": "bopo-user.yaml"
+		"bopoUser": "bopo-user.yaml"
 ]
 
 swaggerMap.each{entry ->
@@ -124,8 +124,8 @@ swaggerMap.each{entry ->
 
 //		inputSpec.set(project.file("$rootDir/src/main/resources/${specFile}").absolutePath)
 		outputDir.set(project.file("$buildDir/generated-sources").absolutePath)
-		apiPackage.set("com.schooldevops.apifirst.openapi.rest")
-		modelPackage.set("com.schooldevops.apifirst.openapi.domain")
+		apiPackage.set("com.schooldevops.apifirst.openapi.${entry.key}.rest")
+		modelPackage.set("com.schooldevops.apifirst.openapi.${entry.key}.domain")
 		configOptions.set(
 				[
 						interfaceOnly: "true",

@@ -1,11 +1,9 @@
 package com.schooldevops.apifirst.apifirstsamples.controller;
 
-import com.schooldevops.apifirst.openapi.domain.Category;
-import com.schooldevops.apifirst.openapi.domain.Pet;
-import com.schooldevops.apifirst.openapi.rest.PetApi;
+import com.schooldevops.apifirst.openapi.petstore.domain.Category;
+import com.schooldevops.apifirst.openapi.petstore.domain.Pet;
+import com.schooldevops.apifirst.openapi.petstore.rest.PetApi;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;

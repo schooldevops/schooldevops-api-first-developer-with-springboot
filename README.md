@@ -11,3 +11,4 @@
 - [Openapi generator 샘플 Gradle 방식](./03-generating-rest-api-gradle.md)
 - 
 
+ref: https://github.com/OpenAPITools/openapi-generator/issues/5571
