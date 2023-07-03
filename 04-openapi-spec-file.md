@@ -10,6 +10,37 @@
 
 - openapi spec 파일은 다음과 같은 기본 구조를 가진다. 
 
+```yaml
+# 기본 영역 
+openapi: 3.0.0
+servers:
+  - url: 'http://petstore.swagger.io/v2'
+info:
+  ... 생략
+
+# tags 영역
+tags:
+  - name: pet
+    description: Everything about your Pets
+  ... 생략
+
+# paths 영역 (endpoint uri)
+
+paths:
+  /pet:
+    post:
+  ... 생략
+
+# components 영역 (스키마 영역)
+components:
+  requestBodies:
+  ... 생략
+  schemas:
+  ... 생략
+```
+
+- 위와 같이 기본영역, tags영역, paths영역, components 영역으로 구성된다. 
+  
 ### Spec 기본정보 설정하기 
 
 ```yaml
