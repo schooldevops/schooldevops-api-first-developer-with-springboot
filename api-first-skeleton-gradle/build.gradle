@@ -134,6 +134,7 @@ swaggerMap.each{entry ->
 						serializableModel: "true",
 						sourceFolder: "/java",
 						implFolder: "/java",
+						useTags: "true"
 				]
 		)
 	})
@@ -159,3 +160,5 @@ sourceSets {
         }
     }
 }
+
+compileJava.dependsOn tasks.openApiGenerateAll

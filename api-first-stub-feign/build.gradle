@@ -70,7 +70,7 @@ dependencies {
 }
 
 openApiGenerate {
-	inputSpec = "$rootDir/src/main/resources/common_alarm.yaml";
+	inputSpec = "$rootDir/src/main/resources/petstore.yaml";
 	outputDir = "${buildDir}/generated-sources"
 
 	generatorName = "spring"
